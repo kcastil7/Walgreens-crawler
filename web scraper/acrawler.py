@@ -1,6 +1,7 @@
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 import xlrd
+import xlwt
 
 file_location = "C:/Users/Kevin Castillo/Desktop/web scraper/wagMAP.xlsx"
 workbook = xlrd.open_workbook(file_location)
@@ -9,7 +10,7 @@ print(sheet.cell_value(1,1))
 data = [[sheet.cell_value(r,c) for c in range (sheet.ncols)] for r in range(sheet.nrows)]
 for rows in range (1, sheet.nrows):
 	data[rows][1] = int(data[rows][1])//1
-
+price_list = []
 my_url = "https://www.walgreens.com/search/results.jsp?Ntt="
 for rows in range(1,sheet.nrows):
 
@@ -36,4 +37,16 @@ for rows in range(1,sheet.nrows):
 			cent = price_div[0].findAll("sup")
 			#print(len(cent))
 			print("The price of WIC " + WIC + " is $" + dollar[0].text+"."+cent[1].text)
+			data[rows][5] = dollar[0].text+"."+cent[1].text
 			check = False
+
+
+workbook = xlwt.Workbook(encoding="utf-8")
+sheet1=workbook.add_sheet("sheet1")
+
+for c in range(sheet.ncols):
+	for r in range(sheet.nrows):
+		sheet1.write(r,c,data[r][c])
+
+
+workbook.save("wagMAP.xls")
